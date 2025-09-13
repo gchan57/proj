@@ -4,6 +4,7 @@ import Welcome from './components/Welcome';
 import Login from './components/Login';
 import FreelancerDashboard from './components/FreeLancerDashboard';
 import ClientDashboard from './components/ClientDashboard';
+import GigDetail from './components/GigDetail';
 import Navbar from './components/Navbar';
 import './App.css';
 
@@ -34,6 +35,7 @@ function App() {
             element={user && user.role === 'client' ? 
               <ClientDashboard user={user} /> : <Navigate to="/login?role=client" />} 
           />
+          <Route path="/gig/:id" element={<GigDetail />} />
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>
       </div>
@@ -41,4 +43,4 @@ function App() {
   );
 }
 
-export default App;
+export default App

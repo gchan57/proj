@@ -1,16 +1,21 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import GigCard from './GigCard';
+import { getGigsByFreelancer } from '../api';
 import './Dashboard.css';
 
 const FreelancerDashboard = ({ user }) => {
   const [activeTab, setActiveTab] = useState('gigs');
-  
-  // Sample gig data
-  const [gigs, setGigs] = useState([
-    { id: 1, title: 'Website Development', price: 500, description: 'I will build a responsive website', category: 'Web Development' },
-    { id: 2, title: 'Logo Design', price: 100, description: 'I will design a professional logo', category: 'Design' },
-    { id: 3, title: 'Content Writing', price: 50, description: 'I will write SEO-friendly content', category: 'Writing' }
-  ]);
+  const [gigs, setGigs] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchGigs = async () => {
+      const freelancerGigs = await getGigsByFreelancer(user.id);
+      setGigs(freelancerGigs);
+      setLoading(false);
+    };
+    fetchGigs();
+  }, [user.id]);
 
   return (
     <div className="dashboard-container">
@@ -48,11 +53,15 @@ const FreelancerDashboard = ({ user }) => {
               <button className="btn btn-primary">Create New Gig</button>
             </div>
             
-            <div className="gigs-grid">
-              {gigs.map(gig => (
-                <GigCard key={gig.id} gig={gig} isOwner={true} />
-              ))}
-            </div>
+            {loading ? (
+                <p>Loading your gigs...</p>
+            ) : (
+                <div className="gigs-grid">
+                {gigs.map(gig => (
+                    <GigCard key={gig.id} gig={gig} isOwner={true} />
+                ))}
+                </div>
+            )}
           </div>
         )}
         

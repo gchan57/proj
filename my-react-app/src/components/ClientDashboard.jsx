@@ -1,19 +1,21 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import GigCard from './GigCard';
+import { getGigs } from '../api';
 import './Dashboard.css';
 
 const ClientDashboard = ({ user }) => {
   const [activeTab, setActiveTab] = useState('browse');
-  
-  // Sample gig data
-  const [gigs, setGigs] = useState([
-    { id: 1, title: 'Website Development', price: 500, description: 'I will build a responsive website', category: 'Web Development', rating: 4.8 },
-    { id: 2, title: 'Logo Design', price: 100, description: 'I will design a professional logo', category: 'Design', rating: 4.5 },
-    { id: 3, title: 'Content Writing', price: 50, description: 'I will write SEO-friendly content', category: 'Writing', rating: 4.7 },
-    { id: 4, title: 'Social Media Management', price: 300, description: 'I will manage your social media accounts', category: 'Marketing', rating: 4.9 },
-    { id: 5, title: 'Mobile App Development', price: 1000, description: 'I will develop a cross-platform mobile app', category: 'Development', rating: 4.6 },
-    { id: 6, title: 'Data Analysis', price: 250, description: 'I will analyze your business data', category: 'Analytics', rating: 4.4 }
-  ]);
+  const [gigs, setGigs] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchGigs = async () => {
+      const allGigs = await getGigs();
+      setGigs(allGigs);
+      setLoading(false);
+    };
+    fetchGigs();
+  }, []);
 
   return (
     <div className="dashboard-container">
@@ -62,11 +64,15 @@ const ClientDashboard = ({ user }) => {
               </div>
             </div>
             
-            <div className="gigs-grid">
-              {gigs.map(gig => (
-                <GigCard key={gig.id} gig={gig} isOwner={false} />
-              ))}
-            </div>
+            {loading ? (
+                <p>Loading gigs...</p>
+            ) : (
+                <div className="gigs-grid">
+                    {gigs.map(gig => (
+                        <GigCard key={gig.id} gig={gig} isOwner={false} />
+                    ))}
+                </div>
+            )}
           </div>
         )}
         
