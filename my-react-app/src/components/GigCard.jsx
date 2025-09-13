@@ -1,41 +1,41 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import './GigCard.css';
 
-const GigCard = ({ gig, isOwner }) => {
+const GigCard = ({ gig, isOwner, onEdit, onDelete }) => {
   return (
     <div className="gig-card">
-      <div className="gig-image">
-        <img src={`https://picsum.photos/300/200?random=${gig.id}`} alt={gig.title} />
-      </div>
-      
-      <div className="gig-content">
-        <div className="gig-header">
-          <h3>{gig.title}</h3>
-          <div className="gig-price">${gig.price}</div>
+      <Link to={`/gig/${gig.id}`} className="gig-card-link">
+        <div className="gig-image">
+          <img src={`https://picsum.photos/300/200?random=${gig.id}`} alt={gig.title} />
         </div>
         
-        <p className="gig-description">{gig.description}</p>
-        
-        <div className="gig-footer">
-          <span className="gig-category">{gig.category}</span>
+        <div className="gig-content">
+          <div className="gig-header">
+            <h3>{gig.title}</h3>
+            <div className="gig-price">${gig.price}</div>
+          </div>
           
-          {!isOwner && gig.rating && (
-            <div className="gig-rating">
-              <span className="stars">★★★★★</span>
-              <span className="rating-number">{gig.rating}</span>
-            </div>
-          )}
+          <p className="gig-description">{gig.description.substring(0, 100)}...</p>
           
-          {isOwner ? (
-            <div className="gig-actions">
-              <button className="btn btn-small">Edit</button>
-              <button className="btn btn-small btn-danger">Delete</button>
-            </div>
-          ) : (
-            <button className="btn btn-primary">Order Now</button>
-          )}
+          <div className="gig-footer">
+            <span className="gig-category">{gig.category}</span>
+            {!isOwner && gig.rating && (
+              <div className="gig-rating">
+                <span className="stars" role="img" aria-label="star">⭐</span>
+                <span className="rating-number">{gig.rating}</span>
+              </div>
+            )}
+          </div>
         </div>
-      </div>
+      </Link>
+
+      {isOwner && (
+        <div className="gig-actions">
+          <button className="btn btn-small" onClick={(e) => { e.stopPropagation(); onEdit(); }}>Edit</button>
+          <button className="btn btn-small btn-danger" onClick={(e) => { e.stopPropagation(); onDelete(); }}>Delete</button>
+        </div>
+      )}
     </div>
   );
 };

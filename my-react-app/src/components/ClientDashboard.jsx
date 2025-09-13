@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import GigCard from './GigCard';
 import { getGigs } from '../api';
 import './Dashboard.css';
@@ -7,20 +7,28 @@ const ClientDashboard = ({ user }) => {
   const [activeTab, setActiveTab] = useState('browse');
   const [gigs, setGigs] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [activeCategory, setActiveCategory] = useState('All');
   
-  const categories = ['All', 'Web Development', 'Design', 'Writing', 'Marketing'];
+  // State for filtering
+  const [activeCategory, setActiveCategory] = useState('All');
+  const [searchTerm, setSearchTerm] = useState('');
+
+  const categories = ['All', 'Web Development', 'Design', 'Writing', 'Marketing', 'Development', 'Analytics'];
+
+  const fetchGigs = useCallback(async () => {
+    setLoading(true);
+    const filteredGigs = await getGigs(activeCategory, searchTerm);
+    setGigs(filteredGigs);
+    setLoading(false);
+  }, [activeCategory, searchTerm]);
 
   useEffect(() => {
-    const fetchGigs = async () => {
-      setLoading(true);
-      const allGigs = await getGigs();
-      // In a real app, you would filter based on activeCategory here
-      setGigs(allGigs);
-      setLoading(false);
-    };
     fetchGigs();
-  }, [activeCategory]);
+  }, [fetchGigs]);
+
+  const handleSearchSubmit = (e) => {
+    e.preventDefault();
+    fetchGigs();
+  };
 
   return (
     <div className="dashboard-container">
@@ -30,14 +38,39 @@ const ClientDashboard = ({ user }) => {
       </div>
       
       <div className="dashboard-tabs">
-        {/* ... tabs remain the same */}
+        <button 
+          className={activeTab === 'browse' ? 'active' : ''}
+          onClick={() => setActiveTab('browse')}
+        >
+          Browse Gigs
+        </button>
+        <button 
+          className={activeTab === 'my-orders' ? 'active' : ''}
+          onClick={() => setActiveTab('my-orders')}
+        >
+          My Orders
+        </button>
+        <button 
+          className={activeTab === 'messages' ? 'active' : ''}
+          onClick={() => setActiveTab('messages')}
+        >
+          Messages
+        </button>
       </div>
       
       <div className="dashboard-content">
         {activeTab === 'browse' && (
           <div className="browse-section">
             <div className="search-header">
-              {/* ... search bar remains the same */}
+              <form className="search-bar" onSubmit={handleSearchSubmit}>
+                <input 
+                  type="text" 
+                  placeholder="Search for services..." 
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
+                <button type="submit" className="btn btn-primary">Search</button>
+              </form>
               
               <div className="categories">
                 <span>Categories:</span>
@@ -53,11 +86,35 @@ const ClientDashboard = ({ user }) => {
               </div>
             </div>
             
-            {/* ... gigs grid remains the same */}
+            {loading ? (
+                <div className="loading-container"><p>Loading gigs...</p></div>
+            ) : (
+                <div className="gigs-grid">
+                    {gigs.length > 0 ? (
+                        gigs.map(gig => (
+                            <GigCard key={gig.id} gig={gig} isOwner={false} />
+                        ))
+                    ) : (
+                        <p>No gigs found matching your criteria.</p>
+                    )}
+                </div>
+            )}
           </div>
         )}
         
-        {/* ... other tabs remain the same */}
+        {activeTab === 'my-orders' && (
+          <div className="orders-section">
+            <h3>Your Orders</h3>
+            <p>You haven't placed any orders yet.</p>
+          </div>
+        )}
+        
+        {activeTab === 'messages' && (
+          <div className="messages-section">
+            <h3>Messages</h3>
+            <p>No new messages.</p>
+          </div>
+        )}
       </div>
     </div>
   );
