@@ -79,21 +79,12 @@ const Login = ({ setUser }) => {
             />
           </div>
           
-          <div className="form-group">
-            <label>I am a</label>
-            <select 
-              name="role" 
-              value={formData.role} 
-              onChange={handleChange}
-            >
-              <option value="client">Client</option>
-              <option value="freelancer">Freelancer</option>
-            </select>
-          </div>
           
-          <button type="submit" className="btn btn-primary">
+          
+         <div className="button-group">  <button type="submit" className="btn btn-primary">
             {isSignUp ? 'Sign Up' : 'Login'}
           </button>
+           </div>
         </form>
         
         <p className="auth-toggle">

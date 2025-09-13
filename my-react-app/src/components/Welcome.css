@@ -1,10 +1,19 @@
+/* Keep the gradient animation keyframes */
+@keyframes gradient-animation {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
 .welcome-container {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;
   padding: 2rem;
-  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  background: var(--background-gradient);
+  background-size: 200% 200%;
+  animation: gradient-animation 15s ease infinite;
 }
 
 .welcome-header {
@@ -13,14 +22,25 @@
 }
 
 .welcome-header h1 {
-  font-size: 3rem;
-  color: #1dbf73;
-  margin-bottom: 0.5rem;
+  font-size: 3.5rem; /* Slightly larger */
+  color: var(--accent-primary);
+  margin-bottom: 1rem;
 }
 
-.welcome-header p {
-  font-size: 1.2rem;
-  color: #555;
+/* Styles for the typewriter effect */
+.subtitle {
+  font-size: 1.3rem;
+  color: var(--text-secondary);
+  height: 2rem; /* Prevent layout shift */
+}
+
+.cursor {
+  animation: blink 0.7s infinite;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
 }
 
 .welcome-content {
@@ -30,54 +50,68 @@
 
 .welcome-hero {
   text-align: center;
-  background: white;
+  background: var(--card-background); 
   padding: 3rem;
   border-radius: 10px;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 5px 25px var(--shadow-color);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .welcome-hero h2 {
   font-size: 2.2rem;
-  margin-bottom: 1rem;
-  color: #333;
-}
-
-.welcome-hero p {
-  font-size: 1.1rem;
-  margin-bottom: 2rem;
-  color: #666;
+  margin-bottom: 2.5rem;
+  color: var(--text-primary);
 }
 
 .welcome-options {
   display: flex;
   justify-content: center;
   gap: 2rem;
-  margin-top: 2rem;
 }
 
 .option-card {
-  background: #f9f9f9;
-  padding: 2rem;
+  background: var(--card-background-light); 
+  padding: 2.5rem 2rem;
   border-radius: 8px;
-  width: 280px;
-  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
-  transition: transform 0.3s ease;
+  width: 300px;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  border-top: 4px solid transparent;
+  border: 1px solid rgba(255, 255, 255, 0.1); 
 }
 
 .option-card:hover {
-  transform: translateY(-5px);
+  transform: translateY(-10px);
+  box-shadow: 0 10px 20px var(--shadow-color);
+}
+
+/* Style for the new icons */
+.card-icon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
 }
 
 .option-card h3 {
   font-size: 1.5rem;
   margin-bottom: 1rem;
-  color: #333;
+  color: var(--text-primary);
 }
 
 .option-card p {
   margin-bottom: 1.5rem;
-  color: #666;
+  color: var(--text-tertiary);
+  min-height: 60px; /* Ensure cards are same height */
 }
+
+/* Specific hover effects for each card */
+.option-card:nth-child(1):hover {
+  border-top-color: var(--accent-primary);
+}
+
+.option-card:nth-child(2):hover {
+  border-top-color: var(--accent-secondary);
+}
+
 
 @media (max-width: 768px) {
   .welcome-options {
@@ -86,6 +120,9 @@
   }
   
   .welcome-header h1 {
-    font-size: 2.2rem;
+    font-size: 2.5rem;
   }
+}
+.welcome-container {
+    padding-top: 100px; 
 }

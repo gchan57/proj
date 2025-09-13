@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { useTheme } from '../context/ThemeContext';
+import logo from '../assets/gighub.png';
 import './Navbar.css';
 
 const Navbar = ({ user, setUser }) => {
@@ -13,7 +14,7 @@ const Navbar = ({ user, setUser }) => {
     <nav className="navbar">
       <div className="nav-container">
         <Link to="/" className="nav-logo">
-          GigHub
+          <img src={logo} alt="GigHub Logo" className="logo-image" />
         </Link>
         
         <div className="nav-menu">
@@ -32,7 +33,7 @@ const Navbar = ({ user, setUser }) => {
               <Link to="/login?role=freelancer" className="nav-link">
                 Become a Freelancer
               </Link>
-              <Link to="/login?role=client" className="btn btn-primary">
+              <Link to="/login?role=client" className="nav-link">
                 Join as Client
               </Link>
             </>

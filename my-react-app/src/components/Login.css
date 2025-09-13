@@ -66,3 +66,6 @@
 .auth-toggle span:hover {
   text-decoration: underline;
 }
+.button-group {
+  text-align: center;
+}
