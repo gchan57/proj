@@ -1,8 +1,10 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { useTheme } from '../context/ThemeContext';
 import './Navbar.css';
 
 const Navbar = ({ user, setUser }) => {
+  const { theme, toggleTheme } = useTheme();
   const handleLogout = () => {
     setUser(null);
   };
@@ -15,6 +17,9 @@ const Navbar = ({ user, setUser }) => {
         </Link>
         
         <div className="nav-menu">
+          <button onClick={toggleTheme} className="theme-toggle-btn">
+            {theme === 'light' ? '🌙' : '☀️'}
+          </button>
           {user ? (
             <>
               <span className="nav-user">Welcome, {user.name}</span>

@@ -1,18 +1,23 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import './Login.css';
 
 const Login = ({ setUser }) => {
   const [searchParams] = useSearchParams();
-  const role = searchParams.get('role') || 'client';
+  const navigate = useNavigate();
+  
   const [formData, setFormData] = useState({
     email: '',
     password: '',
     username: '',
-    role: role
+    role: searchParams.get('role') || 'client'
   });
   const [isSignUp, setIsSignUp] = useState(false);
-  const navigate = useNavigate();
+
+  useEffect(() => {
+    const roleFromURL = searchParams.get('role') || 'client';
+    setFormData(prevData => ({ ...prevData, role: roleFromURL }));
+  }, [searchParams]);
 
   const handleChange = (e) => {
     setFormData({
