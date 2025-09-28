@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
+import { login, signUp } from '../api';
 import './Login.css';
 
 const Login = ({ setUser }) => {
@@ -13,6 +14,7 @@ const Login = ({ setUser }) => {
     role: searchParams.get('role') || 'client'
   });
   const [isSignUp, setIsSignUp] = useState(false);
+  const [error, setError] = useState('');
 
   useEffect(() => {
     const roleFromURL = searchParams.get('role') || 'client';
@@ -26,16 +28,24 @@ const Login = ({ setUser }) => {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // In a real app, you would validate and send to backend
-    setUser({
-      id: 1,
-      name: formData.username || 'Test User',
-      email: formData.email,
-      role: formData.role
-    });
-    navigate(`/${formData.role}/dashboard`);
+    setError('');
+    try {
+      let userData;
+      if (isSignUp) {
+        userData = await signUp(formData);
+      } else {
+        userData = await login({
+          email: formData.email,
+          password: formData.password
+        });
+      }
+      setUser(userData);
+      navigate(`/${userData.role}/dashboard`);
+    } catch (err) {
+      setError(err.message);
+    }
   };
 
   return (
@@ -79,9 +89,10 @@ const Login = ({ setUser }) => {
             />
           </div>
           
+          {error && <p className="error-message">{error}</p>}
           
-          
-         <div className="button-group">  <button type="submit" className="btn btn-primary">
+         <div className="button-group">
+           <button type="submit" className="btn btn-primary">
             {isSignUp ? 'Sign Up' : 'Login'}
           </button>
            </div>
@@ -89,7 +100,10 @@ const Login = ({ setUser }) => {
         
         <p className="auth-toggle">
           {isSignUp ? 'Already have an account?' : "Don't have an account?"}
-          <span onClick={() => setIsSignUp(!isSignUp)}>
+          <span onClick={() => {
+            setIsSignUp(!isSignUp);
+            setError('');
+          }}>
             {isSignUp ? 'Login' : 'Sign Up'}
           </span>
         </p>

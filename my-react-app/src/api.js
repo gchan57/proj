@@ -1,9 +1,11 @@
 // --- Mock Database using localStorage ---
 
 const GIGS_KEY = 'gighub_gigs';
+const USERS_KEY = 'gighub_users';
+const ORDERS_KEY = 'gighub_orders';
 
-// Initialize gigs with default data if none exists in localStorage
-const initializeGigs = () => {
+// Initialize with default data if none exists in localStorage
+const initializeData = () => {
   let gigs = JSON.parse(localStorage.getItem(GIGS_KEY));
   if (!gigs || gigs.length === 0) {
     gigs = [
@@ -16,16 +18,33 @@ const initializeGigs = () => {
     ];
     localStorage.setItem(GIGS_KEY, JSON.stringify(gigs));
   }
-  return gigs;
+
+  let users = JSON.parse(localStorage.getItem(USERS_KEY));
+  if (!users || users.length === 0) {
+    users = [];
+    localStorage.setItem(USERS_KEY, JSON.stringify(users));
+  }
+
+  let orders = JSON.parse(localStorage.getItem(ORDERS_KEY));
+  if (!orders || orders.length === 0) {
+    orders = [];
+    localStorage.setItem(ORDERS_KEY, JSON.stringify(orders));
+  }
+
+  return { gigs, users, orders };
 };
 
-let gigs = initializeGigs();
+let { gigs, users, orders } = initializeData();
 
-const saveGigs = () => {
+const saveData = () => {
   localStorage.setItem(GIGS_KEY, JSON.stringify(gigs));
+  localStorage.setItem(USERS_KEY, JSON.stringify(users));
+  localStorage.setItem(ORDERS_KEY, JSON.stringify(orders));
 };
 
 // --- API Functions ---
+
+// ... (getGigs, getGigById, getGigsByFreelancer, createGig, updateGig, deleteGig remain the same)
 
 // GET Gigs with filtering and search
 export const getGigs = (category = 'All', searchTerm = '') => new Promise(resolve => {
@@ -37,12 +56,12 @@ export const getGigs = (category = 'All', searchTerm = '') => new Promise(resolv
 
   if (searchTerm) {
     const lowercasedTerm = searchTerm.toLowerCase();
-    filteredGigs = filteredGigs.filter(gig => 
+    filteredGigs = filteredGigs.filter(gig =>
       gig.title.toLowerCase().includes(lowercasedTerm) ||
       gig.description.toLowerCase().includes(lowercasedTerm)
     );
   }
-  
+
   setTimeout(() => resolve(filteredGigs), 300);
 });
 
@@ -65,20 +84,74 @@ export const createGig = (gigData, freelancerId) => new Promise(resolve => {
     rating: (Math.random() * (5 - 4) + 4).toFixed(1) // Random rating for demo
   };
   gigs.unshift(newGig); // Add to the beginning of the list
-  saveGigs();
+  saveData();
   setTimeout(() => resolve(newGig), 300);
 });
 
 // UPDATE a Gig
 export const updateGig = (gigId, updatedData) => new Promise(resolve => {
   gigs = gigs.map(gig => (gig.id === gigId ? { ...gig, ...updatedData } : gig));
-  saveGigs();
+  saveData();
   setTimeout(() => resolve(gigs.find(gig => gig.id === gigId)), 300);
 });
 
 // DELETE a Gig
 export const deleteGig = (gigId) => new Promise(resolve => {
   gigs = gigs.filter(gig => gig.id !== gigId);
-  saveGigs();
+  saveData();
   setTimeout(() => resolve({ success: true }), 300);
+});
+
+
+// USER Functions
+export const signUp = (userData) => new Promise((resolve, reject) => {
+    const existingUser = users.find(user => user.email === userData.email);
+    if (existingUser) {
+        return reject(new Error('User with this email already exists.'));
+    }
+    const newUser = {
+        id: Date.now(),
+        ...userData
+    };
+    users.push(newUser);
+    saveData();
+    setTimeout(() => resolve(newUser), 300);
+});
+
+export const login = (credentials) => new Promise((resolve, reject) => {
+    const user = users.find(user => user.email === credentials.email && user.password === credentials.password);
+    if (user) {
+        setTimeout(() => resolve(user), 300);
+    } else {
+        setTimeout(() => reject(new Error('Invalid email or password.')), 300);
+    }
+});
+
+
+// ORDER Functions
+export const createOrder = (orderData) => new Promise(resolve => {
+    const newOrder = {
+        id: Date.now(),
+        ...orderData,
+        status: 'pending',
+        createdAt: new Date().toISOString()
+    };
+    orders.push(newOrder);
+    saveData();
+    setTimeout(() => resolve(newOrder), 300);
+});
+
+
+export const getOrdersByClient = (clientId) => new Promise(resolve => {
+    const clientOrders = orders.filter(order => order.clientId === clientId);
+    setTimeout(() => resolve(clientOrders), 300);
+});
+
+
+export const getOrdersByFreelancer = (freelancerId) => new Promise(resolve => {
+    const freelancerOrders = orders.filter(order => {
+        const gig = gigs.find(g => g.id === order.gigId);
+        return gig && gig.freelancerId === freelancerId;
+    });
+    setTimeout(() => resolve(freelancerOrders), 300);
 });
